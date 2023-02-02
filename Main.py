@@ -120,6 +120,8 @@ def LoadPrices(filename: str):
 
 def Show_Figure(series: list, title: str, filename: str, currencySymbol: str = ""):
     dataFrame = pd.concat(series, ignore_index=True).sort_values("Cost Per Frame (1080p Ultra)", ascending=False)
+    dataFrame.drop(dataFrame.index[dataFrame["Cost Per Frame (1080p Ultra)"] == 0], inplace=True)
+
     fhdBar = px.bar(dataFrame, y="GPU", x=["1080p Ultra", "Cost Per Frame (1080p Ultra)"], orientation='h', text_auto=True, color="GPU",
         color_discrete_map=color_map
     )
@@ -129,6 +131,8 @@ def Show_Figure(series: list, title: str, filename: str, currencySymbol: str = "
         fhdTraces.append(fhdBar["data"][trace])
 
     dataFrame = pd.concat(series, ignore_index=True).sort_values("Cost Per Frame (1440p Ultra)", ascending=False)
+    dataFrame.drop(dataFrame.index[dataFrame["Cost Per Frame (1440p Ultra)"] == 0], inplace=True)
+    
     qhdBar = px.bar(dataFrame, y="GPU", x=["1440p Ultra", "Cost Per Frame (1440p Ultra)"], orientation='h', text_auto=True, color="GPU",
         color_discrete_map=color_map
     )
