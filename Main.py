@@ -92,8 +92,10 @@ def LoadGPUs(pricing_data_csv: str):
 def CreateSeries(gpus: list):
     series = []
     for gpu in gpus:
+        if gpu.Name not in color_map:
+            continue
         seriesData = {
-            "GPU": gpu.Name,
+            "GPU": f"{gpu.Name} (${round(gpu.Cost)})",
             "1080p Ultra": gpu.fhdUltra,
             "1080p Medium": gpu.fhdMedium,
             "1440p Ultra": gpu.qhdUltra,
@@ -104,8 +106,7 @@ def CreateSeries(gpus: list):
             "Cost Per Frame (1440p Ultra)": round(gpu.Cost / gpu.qhdUltra, 2) if gpu.fhdUltra != 0.00 else 0,
             "Cost Per Frame (4K Ultra)": round(gpu.Cost / gpu.fourkUltra, 2) if gpu.fourkUltra != 0.00 else 0
         }
-        if gpu.Name not in color_map:
-            continue
+        color_map[f"{gpu.Name} (${round(gpu.Cost)})"] = color_map.get(gpu.Name)
         series.append(pd.DataFrame([seriesData]))
     return series
 
@@ -115,7 +116,7 @@ def LoadPrices(filename: str):
         data = pricing_file.readlines()
     for line in data:
         val1, val2 = line.replace("\n", "").split(",")
-        prices[val1] = float(val2)
+        prices[val1] = float(val2) if float(val2) != 9999999 else 0
     return prices
 
 def Show_Figure(series: list, title: str, filename: str, currencySymbol: str = ""):
@@ -125,7 +126,7 @@ def Show_Figure(series: list, title: str, filename: str, currencySymbol: str = "
     fhdBar = px.bar(dataFrame, y="GPU", x=["1080p Ultra", "Cost Per Frame (1080p Ultra)"], orientation='h', text_auto=True, color="GPU",
         color_discrete_map=color_map
     )
-    fhdBar.update_traces(showlegend=False, texttemplate=["%{value} FPS", currencySymbol + "%{value}"], textposition=["outside", "outside"])
+    fhdBar.update_traces(showlegend=False, texttemplate=["%{value} FPS", currencySymbol + "%{value}"], textposition=["inside", "outside"])
     fhdTraces = []
     for trace in range(len(fhdBar["data"])):
         fhdTraces.append(fhdBar["data"][trace])
@@ -136,7 +137,7 @@ def Show_Figure(series: list, title: str, filename: str, currencySymbol: str = "
     qhdBar = px.bar(dataFrame, y="GPU", x=["1440p Ultra", "Cost Per Frame (1440p Ultra)"], orientation='h', text_auto=True, color="GPU",
         color_discrete_map=color_map
     )
-    qhdBar.update_traces(showlegend=False, texttemplate=["%{value} FPS", currencySymbol + "%{value}"], textposition=["outside", "outside"])
+    qhdBar.update_traces(showlegend=False, texttemplate=["%{value} FPS", currencySymbol + "%{value}"], textposition=["inside", "outside"])
 
     qhdTraces = []
     for trace in range(len(qhdBar["data"])):
@@ -149,7 +150,7 @@ def Show_Figure(series: list, title: str, filename: str, currencySymbol: str = "
     fourKBar = px.bar(dataFrame, y="GPU", x=["4K Ultra", "Cost Per Frame (4K Ultra)"], orientation='h', text_auto=True, color="GPU",
         color_discrete_map=color_map
     )
-    fourKBar.update_traces(showlegend=False, texttemplate=["%{value} FPS", currencySymbol + "%{value}"], textposition=["outside", "outside"],name="Markers and Text" )
+    fourKBar.update_traces(showlegend=False, texttemplate=["%{value} FPS", currencySymbol + "%{value}"], textposition=["inside", "outside"],name="Markers and Text" )
 
     fourKTraces = []
     for trace in range(len(fourKBar["data"])):
@@ -166,10 +167,10 @@ def Show_Figure(series: list, title: str, filename: str, currencySymbol: str = "
 
 
     final_figure.update_layout(
-        barmode="overlay", template="plotly_dark", title=title
+        barmode="overlay", template="plotly_dark", title=title, autosize=False
     )
     final_figure.update_traces(texttemplate=["%{value} FPS", currencySymbol + "%{value}"])
-    final_figure.write_image(filename, width=1920, height=1080, format="png")
+    final_figure.write_image(filename, width=2460, height=1080, format="png")
 
 
 if __name__ == "__main__":
@@ -180,14 +181,6 @@ if __name__ == "__main__":
     now = datetime.datetime.now()
     currentDateStr = now.strftime(f"%B %d %Y")
 
-    gpus = LoadGPUs("./pricing_data/US_Newegg.csv")
+    gpus = LoadGPUs("./pricing_data/USA_Newegg.csv")
     series = CreateSeries(gpus)
     Show_Figure(series=series, title=f"USA Newegg Cost Per Frame (USD) | {currentDateStr}", currencySymbol="$", filename = "images/US_Newegg.png")
-    
-
-
-
-
-
-
-

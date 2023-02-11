@@ -1,3 +1,16 @@
 
 gpu/
 Main2.py
+images/US_Ebay.png
+images/DE_Ebay.png
+images/CA_Newegg.png
+images/CA_Ebay.png
+images/AU_Ebay.png
+images/UK_Ebay.png
+pricing_data/AU_Ebay.csv
+pricing_data/CA_Ebay.csv
+pricing_data/CA_Newegg.csv
+pricing_data/DE_Ebay.csv
+pricing_data/UK_Ebay.csv
+pricing_data/USA_Ebay.csv
+test.py
