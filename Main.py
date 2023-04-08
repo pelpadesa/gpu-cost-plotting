@@ -177,7 +177,7 @@ if __name__ == "__main__":
     # Assumes GPU,Price. See examples in ./pricing_data
 
     # May be useful for getting this data:
-    # https://github.com/pelpadesa/gpu-ebay-pricing
+    # https://github.com/pelpadesa/retail-searches
     now = datetime.datetime.now()
     currentDateStr = now.strftime(f"%B %d %Y")
 
